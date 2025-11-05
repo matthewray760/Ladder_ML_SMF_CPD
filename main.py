@@ -38,7 +38,7 @@ rows = []
 for _, row in originations.iterrows():
     identifier = row['Identifier']
     # For each maturity type, map the value to Table 2
-    for column in ['OriginalPrincipalAmount','Originator_1%','ExtendedMaturity_3','IndexRoundingInterval','CouponType','Closing Counsel','AuthorizedAmount','Originator_2%','IndexRounding','Originator_3%','Unfunded','ExtendedMaturity_2','RateCapMaturity','Loan Purpose','Originator_3','Originator_1','Originator_2','Intercompany','Sponsor','IndexFloor','CREFC Property Type','ExtendedMaturity_1','RateCapNotional','RateCapStrike','ExtendedMaturity_4','AmortizationType','Broker','IndexOffset','ReferenceIndex','Cross-Collateralized','FloaterSpread','FinalMaturityDate','HFS_HFI','CouponResetFrequency']:
+    for column in ['OriginalPrincipalAmount','Originator_1%','ExtendedMaturity_3','IndexRoundingInterval','CouponType','Closing Counsel','AuthorizedAmount','Originator_2%','IndexRounding','Originator_3%','Unfunded','ExtendedMaturity_2','RateCapMaturity','Loan Purpose','Originator_3','Originator_1','Originator_2','Intercompany','Sponsor','IndexFloor','CREFC Property Type','ExtendedMaturity_1','RateCapNotional','RateCapStrike','ExtendedMaturity_4','AmortizationType','Broker','IndexOffset','ReferenceIndex','Cross-Collateralized','FloaterSpread','FinalMaturityDate','HFS_HFI','CouponResetFrequency','City','State','PostalCode']:
         value = row[column]  # Get the value for this maturity type
         # Append the row with the identifier and value (if not None)
         if value is not None:
@@ -87,7 +87,10 @@ mapping = {
     'Closing Counsel': 85515,
     'Sponsor': 85516,
     'Broker': 85517,
-    'Loan Purpose': 85518
+    'Loan Purpose': 85518,
+    'City': 85690,
+    'State': 85692,
+    'PostalCode': 85694
 }
 
 table2['ID'] = table2['Name'].map(mapping)
@@ -107,13 +110,15 @@ merged_df = table2.merge(security_ids, on = 'Identifier', how = 'left')
 
 merged_df.rename(columns= {'ID_x' : 'CPD ID', 'ID_y':'SecurityID'}, inplace=True)
 
+print(merged_df.columns)
+
 final_df = merged_df.copy()
 final_df['ClientId'] = clientid
 final_df['Reportdate'] = report_date
 final_df['EndDate'] = ''
 
 
-final_df = final_df[['CPD ID','ClientId','SecurityID','Reportdate','EndDate', 'Value']]
+final_df = final_df[['Name','CPD ID','ClientId','SecurityID','Reportdate','EndDate', 'Value']]
 
 
 final_df.to_excel(fr'C:\Users\matthewray\OneDrive - Clearwater\Desktop\Ladder\Python\Loan_Orig_CPD\outputs\{originations_filename}.xlsx', index = False)
